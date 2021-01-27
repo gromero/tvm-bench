@@ -45,39 +45,46 @@ def parse_options(argv):
 
 
 def get_device_arch():
-    arch = cpuinfo.get_cpu_info()['arch_string_raw']
+    arch = cpuinfo.get_cpu_info()['raw_arch_string']
     return arch
 
 def get_device_attributes():
-    if get_device_arch() == "aarch64":
+    arch = get_device_arch()
+    if arch == "aarch64":
         if get_device_type() == 'thunderxt88':
             return '+neon,+crc,+lse'
         elif get_device_type() == 'cortex-a78':
             return '+neon,+crc'
         return '+neon'
-    if get_device_arch() == "armv7l":
+    if arch == "armv7l":
         return  '+neon,+vfp4'
     else:
+        print(f"Warning: unrecognized arch {arch}, "
+               "returning no attributes!")
         return  ''
 
 def get_device_type():
     cpudictionary=cpuinfo.get_cpu_info()
-    brand=cpudictionary.get('brand_raw')
-    cpuversion=cpudictionary.get('cpuinfo_version_string')
+    brand=cpudictionary.get('brand')
+    cpuversion=cpudictionary.get('cpuinfo_version')
     if brand == 'ThunderX 88XX':
         return 'thunderxt88'
     elif brand == 'ARMv7 Processor rev 5 (v7l)':
         return 'cortex-a7'
     elif brand is None:
-        brand=cpudictionary.get('vendor_id_raw')
+        brand=cpudictionary.get('vendor_id')
         if brand =='Qualcomm' :
             return 'cortex-a75'
-        elif cpuversion =='7.0.0':
+        elif cpuversion == (7,0,0):
             return 'cortex-a78'
         else:
-            return ' '
+            print("Warning: unrecognized brand/cpu version "
+                  f"{brand}/{cpuversion}")
+            return 'any'
     else:
-        return ' '
+        print("Warning: unrecognized brand/cpu version "
+               f"{brand}/{cpuversion}")
+        return 'any'
 
 def get_tvm_target(device, dev_type, arch_token, attributes):
     if arch_token == "aarch64":

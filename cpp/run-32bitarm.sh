@@ -23,7 +23,7 @@ echo "Build the app.."
 mkdir -p lib
 make
 echo "Run the example"
-export LD_LIBRARY_PATH=$(TVM_HOME)/build:${LD_LIBRARY_PATH}
-export DYLD_LIBRARY_PATH=$(TVM_HOME)/build:${DYLD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${TVM_HOME}/build:${LD_LIBRARY_PATH}
+export DYLD_LIBRARY_PATH=${TVM_HOME}/build:${DYLD_LIBRARY_PATH}
 
 lib/cpp_deploy_mobquant
